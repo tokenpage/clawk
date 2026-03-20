@@ -1,0 +1,22 @@
+{
+  "name": "clawk-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@kibalabs/core": "^0.7.1",
+    "@kibalabs/core-react": "^0.10.0",
+    "@kibalabs/ui-react": "0.12.1-next.4",
+    "@kibalabs/ui-react-toast": "^0.3.0",
+    "@kibalabs/web3-react": "0.3.1-next.1",
+    "@tanstack/react-query": "^5.90.21",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "wagmi": "^3.5.0"
+  },
+  "devDependencies": {
+    "@kibalabs/build": "0.14.2-next.2",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
+  }
+}
