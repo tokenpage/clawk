@@ -40,16 +40,15 @@ const routes: IRoute<IGlobals>[] = [
 
 interface IAppProps {
   staticPath?: string;
-  // eslint-disable-next-line react/no-unused-prop-types
   pageData?: unknown | undefined | null;
 }
 
-export function App({ staticPath }: IAppProps): React.ReactElement {
+export function App(props: IAppProps): React.ReactElement {
   return (
     <KibaApp isFullPageApp={true}>
       <GlobalsProvider globals={globals}>
         <QueryClientProvider client={queryClient}>
-          <Router staticPath={staticPath}>
+          <Router staticPath={props.staticPath}>
             <SubRouter routes={routes} />
           </Router>
           <ToastContainer />

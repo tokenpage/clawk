@@ -3,14 +3,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'api/**'
-      - '.github/workflows/api-deploy.yml'
+      - 'agent/**'
+      - '.github/workflows/agent-deploy.yml'
   workflow_dispatch:
 jobs:
-  api-deploy:
+  agent-deploy:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE: ghcr.io/${{ github.repository }}-api:latest
+      DOCKER_IMAGE: ghcr.io/${{ github.repository }}-agent:latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -25,18 +25,18 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v5
         with:
-          context: api
+          context: agent
           push: true
-          cache-from: type=gha,scope=api
-          cache-to: type=gha,mode=max,scope=api
+          cache-from: type=gha,scope=agent
+          cache-to: type=gha,mode=max,scope=agent
           tags: ${{ env.DOCKER_IMAGE }}
-  api-run:
-    needs: api-deploy
+  agent-run:
+    needs: agent-deploy
     runs-on: ubuntu-latest
     env:
-      NAME: clawk-api
+      NAME: clawk-agent
       VERSION: ${{ github.sha }}
-      DOCKER_IMAGE: ghcr.io/${{ github.repository }}-api:latest
+      DOCKER_IMAGE: ghcr.io/${{ github.repository }}-agent:latest
     steps:
       - name: executing remote ssh commands
         uses: appleboy/ssh-action@master
@@ -48,17 +48,14 @@ jobs:
           envs: DOCKER_IMAGE,NAME,VERSION
           script: |
             set -e
-            url="clawk-api.yieldseeker.xyz"
             docker pull ${DOCKER_IMAGE}
             docker stop ${NAME} && docker rm ${NAME} || true
             docker run \
               --name ${NAME} \
               --detach \
-              --publish-all \
               --restart on-failure \
+              --volume /home/ec2-user/clawk-agent-workspace:/app/workspace \
               --env NAME=${NAME} \
               --env VERSION=${VERSION} \
-              --env VIRTUAL_HOST=${url} \
-              --env LETSENCRYPT_HOST=${url} \
-              --env-file ~/.${NAME}.vars \
+              --env-file ~/.clawk-agent.vars \
               ${DOCKER_IMAGE}
