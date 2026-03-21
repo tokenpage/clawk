@@ -1,13 +1,9 @@
 {
-  // Clawk agent configuration
-  // Mounted at ~/.openclaw/openclaw.json inside the container
-
   agents: {
     defaults: {
       workspace: "/app/workspace",
       model: {
         primary: "google/gemini-3-flash-preview",
-        fallbacks: ["google/gemini-3-pro-preview"],
       },
     },
   },
@@ -17,7 +13,8 @@
       enabled: true,
       botToken: "${TELEGRAM_BOT_TOKEN}",
       dmPolicy: "allowlist",
-      allowFrom: ["${TELEGRAM_ALLOWED_USER_ID}"],
+      allowFrom: [913874732],
+      groupPolicy: "disabled",
     },
   },
 
@@ -35,6 +32,9 @@
       "polymarket-trade": {
         enabled: true,
       },
+      "odds-comparison": {
+        enabled: true,
+      },
     },
   },
 
@@ -46,7 +46,8 @@
 
   gateway: {
     port: 18789,
-    bind: "0.0.0.0",
+    bind: "lan",
+    mode: "local",
     auth: {
       mode: "token",
       token: "${OPENCLAW_GATEWAY_TOKEN}",

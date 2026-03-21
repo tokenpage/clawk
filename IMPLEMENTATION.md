@@ -20,21 +20,27 @@ Get a running app + API with nothing in it, just the plumbing.
 - One health-check endpoint to confirm it's alive
 - Dockerized
 
-**Deliverable:** `docker compose up` brings up app + api + db, app loads in browser, API returns 200 on `/health`
+**Deliverable:** App loads in browser, API returns 200 on `/health`
 
----
+> **TODO:** DB not yet set up — need to provision Postgres, create credentials, and populate `~/.clawk-api.vars` on the appbox before the API can be deployed and run.
 
 ## Step 2 — OpenClaw Agent Running
 
-Get the OpenClaw runtime installed and talking to Gemini, with our custom skills wired in.
+Get the OpenClaw runtime installed, configured, and deployed — with state persisted across redeployments.
 
-- Install OpenClaw (`npm install -g openclaw` or equivalent)
-- Configure Gemini as the LLM (verify correct model ID via API)
+**Local setup**
+- Install OpenClaw globally (`npm install -g @openclaw/cli` or equivalent)
+- Configure Gemini as the LLM in `~/.openclaw/config.yml` (verify correct model ID)
 - Create `clawk/skills/market-research/SKILL.md` — teaches the agent to fetch Polymarket Gamma API data (markets, odds, volume). Read-only, no wallet.
 - Create `clawk/skills/polymarket-trade/SKILL.md` — stub for now, just describes the trading intent
-- Confirm agent can answer questions about live Polymarket markets
+- Confirm agent can answer questions about live Polymarket markets locally
 
-**Deliverable:** Run agent locally, ask "what are the top prediction markets right now?" and get a real answer from Gamma API data
+**Deployment**
+- Add a GitHub Actions workflow `openclaw-deploy.yml` that SSHes to the appbox and restarts the OpenClaw process
+- OpenClaw state (conversation history, skill state) lives in a named volume / persistent directory on the appbox (`~/clawk-agent-data/`) — mounted at the same path on every deploy so redeployment never wipes it
+- Skills are copied from the repo into the container/process on deploy; config and state dirs are excluded from the copy and always read from the persistent volume
+
+**Deliverable:** OpenClaw running on the appbox, agent answers questions about live Polymarket markets, redeployment doesn't wipe state
 
 ---
 
